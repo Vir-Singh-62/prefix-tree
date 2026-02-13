@@ -61,7 +61,7 @@ class Tree
         }
     }
 
-    public bool has(string word)
+    public bool search(string word)
     {
         var current = this.root;
         foreach (var c in word)
