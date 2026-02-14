@@ -1,6 +1,6 @@
 ﻿class TreeNode
 {
-    public bool end { get; set; } = false;
+    public bool IsEndOfWord { get; set; } = false;
     public Dictionary<char, TreeNode> Children { get; set; } = new();
 }
 
@@ -19,14 +19,14 @@ class Tree
             }
             current = current.Children[c];
         }
-        current.end = true;
+        current.IsEndOfWord = true;
     }
 
     public void remove(string word)
     {
         if (word.Length == 0)
         {
-            this.root.end = false;
+            this.root.IsEndOfWord = false;
             return;
         }
 
@@ -42,18 +42,18 @@ class Tree
             current = current.Children[c];
         }
 
-        if (!current.end)
+        if (!current.IsEndOfWord)
         {
             return;
         }
 
-        current.end = false;
+        current.IsEndOfWord = false;
 
         for (int i = stack.Count - 1; i >= 0; i--)
         {
             var (parent, ch) = stack[i];
             var child = parent.Children[ch];
-            if (child.end || child.Children.Count > 0)
+            if (child.IsEndOfWord || child.Children.Count > 0)
             {
                 break;
             }
@@ -72,7 +72,7 @@ class Tree
             }
             current = current.Children[c];
         }
-        return current.end;
+        return current.IsEndOfWord;
     }
 
     public List<string> complete(string prefix)
@@ -94,7 +94,7 @@ class Tree
     {
         if (result == null) result = new List<string>();
         
-        if (node.end)
+        if (node.IsEndOfWord)
         {
             result.Add(path);
         }

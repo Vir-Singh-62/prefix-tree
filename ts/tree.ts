@@ -1,9 +1,9 @@
 class TreeNode {
-  end: boolean;
+  isEndOfWord: boolean;
   children: Map<string, TreeNode>;
 
   constructor() {
-    this.end = false;
+    this.isEndOfWord = false;
     this.children = new Map();
   }
 }
@@ -23,12 +23,12 @@ class PrefixTree {
       }
       currentNode = currentNode.children.get(char)!;
     }
-    currentNode.end = true;
+    currentNode.isEndOfWord = true;
   }
 
   remove(word: string): void {
     if (word.length === 0) {
-      this.root.end = false;
+      this.root.isEndOfWord = false;
       return;
     }
 
@@ -43,17 +43,17 @@ class PrefixTree {
       currentNode = currentNode.children.get(char)!;
     }
 
-    if (!currentNode.end) {
+    if (!currentNode.isEndOfWord) {
       return;
     }
 
-    currentNode.end = false;
+    currentNode.isEndOfWord = false;
 
     // Prune nodes that are no longer needed (bottom-up)
     for (let i = stack.length - 1; i >= 0; i--) {
       const [parent, char] = stack[i];
       const child = parent.children.get(char)!;
-      if (child.end || child.children.size > 0) {
+      if (child.isEndOfWord || child.children.size > 0) {
         break;
       }
       parent.children.delete(char);
@@ -68,21 +68,29 @@ class PrefixTree {
       }
       currentNode = currentNode.children.get(char)!;
     }
-    return currentNode.end;
+    return currentNode.isEndOfWord;
   }
 
   complete(prefix: string): string[] {
-    const results = this.dfs(this.root, prefix);
-    return results;
+    let node = this.root;
+    for (const char of prefix) {
+      if (!node.children.has(char)) return [];
+      node = node.children.get(char)!;
+    }
+
+    return this.dfs(node, prefix);
   }
 
-  private dfs(node: TreeNode, path: string, results: string[] = []): string[] {
-    if (node.end) {
-      results.push(path);
+  private dfs(node: TreeNode, prefix: string): string[] {
+    const results: Array<string> = [];
+
+    if (node.isEndOfWord) {
+      results.push(prefix);
     }
     node.children.forEach((childNode, char) => {
-      results.push(...this.dfs(childNode, path + char, results));
+      results.push(...this.dfs(childNode, prefix + char));
     });
+
     return results;
   }
 }
